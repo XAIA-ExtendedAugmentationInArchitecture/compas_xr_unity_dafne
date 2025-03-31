@@ -24,7 +24,7 @@ MonoBehaviour:
     shareRecordingsInITunes: 0
     logLevel: 0
     version: 10.18.4
-    eulaAcceptedVersions: '{"Values":["10.18","10.15","10.19"]}'
+    eulaAcceptedVersions: '{"Values":["10.18","10.15","10.19","0.0"]}'
   database:
     disableModelExtraction: 0
   shaders:
@@ -47,4 +47,4 @@ MonoBehaviour:
   webcam:
     renderTextureLayer: 30
   packageInformation:
-    ARFoundationVersion: 5.1.2
+    ARFoundationVersion: 5.1.3

@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "956444401010",
+    "firebase_url": "https://compasxrdafne-default-rtdb.firebaseio.com",
+    "project_id": "compasxrdafne",
+    "storage_bucket": "compasxrdafne.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:956444401010:android:c3e7efc21711540e5791eb",
+        "android_client_info": {
+          "package_name": "com.PRINC.dafne"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWcMRB_oYvFrId2S-L3DUkUspg2bwx3Fw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
