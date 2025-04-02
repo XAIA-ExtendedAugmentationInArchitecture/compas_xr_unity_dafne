@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Login.unity
     guid: fb5181efe1dec43bf8eb1785a4e9ae9b
   - enabled: 1
+    path: Assets/Scenes/Material Registration.unity
+    guid: 0149b1253ae88774b9c219ab466fc70d
+  - enabled: 1
     path: Assets/Scenes/MainGame.unity
     guid: 7ce64d0bd5a9443dfb4f5305a842b641
   m_configObjects:

@@ -116,7 +116,7 @@ namespace CompasXR.Database.FirebaseManagment
                             else if (t.IsCompleted)
                             {
                                 Debug.Log("User updated successfully.");
-                                HelpersExtensions.ChangeScene("MainGame");
+                                HelpersExtensions.ChangeScene("Material Registration");
                             }
                         });
                     }
@@ -131,7 +131,8 @@ namespace CompasXR.Database.FirebaseManagment
                             else if (t.IsCompleted)
                             {
                                 Debug.Log("Device created successfully.");
-                                HelpersExtensions.ChangeScene("MainGame");
+                                StaticData.User = playerName;
+                                HelpersExtensions.ChangeScene("Material Registration");
                             }
                         });
                     }
@@ -152,7 +153,8 @@ namespace CompasXR.Database.FirebaseManagment
                         else if (t.IsCompleted)
                         {
                             Debug.Log("User created successfully.");
-                            HelpersExtensions.ChangeScene("MainGame");
+                            StaticData.User = playerName;
+                            HelpersExtensions.ChangeScene("Material Registration");
                         }
                     });
                 }
