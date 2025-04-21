@@ -19,7 +19,7 @@ namespace CompasXR.Database.FirebaseManagment
     public class MaterialRegistrationManager : MonoBehaviour
     {
         /*
-        * MaterialRegistrationManager : Class is used to manage the user record and configuration settings.
+        * DimensionDetectionManager : Class is used to manage the user record and configuration settings.
         * Additionally it is designed to handle the user record events, and allow users to create new user
         */
         private string userID;
@@ -112,6 +112,7 @@ namespace CompasXR.Database.FirebaseManagment
                 case "Group A (5-6)": color = "red"; break;
                 case "Group B (7-8)": color = "blue"; break;
                 case "Group C (9-10)": color = "green"; break;
+                case "Random": color = "#FF00FF"; break;
             }
 
             string actionString = $"<color={color}>{action} {quantityChanged}</color>";

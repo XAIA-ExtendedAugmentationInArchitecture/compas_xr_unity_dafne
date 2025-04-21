@@ -65,6 +65,7 @@ namespace CompasXR.Robots.MqttData
         public string approvalCounterRequestTopic { get; set; }
         public string sendTrajectoryTopic { get; set; }
         public string approvalCounterResultTopic { get; set; }
+        public string sendComputeAction { get; set; }
         public Publishers(string projectName)
         {
             getTrajectoryRequestTopic = $"compas_xr/get_trajectory_request/{projectName}";
@@ -72,6 +73,7 @@ namespace CompasXR.Robots.MqttData
             approvalCounterResultTopic = $"compas_xr/approval_counter_result/{projectName}";
             approveTrajectoryTopic = $"compas_xr/approve_trajectory/{projectName}";
             sendTrajectoryTopic = $"compas_xr/send_trajectory/{projectName}";
+            sendComputeAction = "/dafne/material_registration/actions";
         }
 
     }
@@ -88,6 +90,7 @@ namespace CompasXR.Robots.MqttData
         public string approveTrajectoryTopic { get; set; }
         public string approvalCounterRequestTopic { get; set; }
         public string approvalCounterResultTopic { get; set; }
+        public string getDetectionResult { get; set; }
 
         //Constructer for subscribers that takes an input project name
         public Subscribers(string projectName)
@@ -97,6 +100,7 @@ namespace CompasXR.Robots.MqttData
             approveTrajectoryTopic = $"compas_xr/approve_trajectory/{projectName}";
             approvalCounterRequestTopic = $"compas_xr/approval_counter_request/{projectName}";
             approvalCounterResultTopic = $"compas_xr/approval_counter_result/{projectName}";
+            getDetectionResult = "/dafne/material_registration/result";
         }
     }
 
