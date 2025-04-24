@@ -6954,7 +6954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc04ba945a68e014b8826fa31515412c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brokerAddress: localhost
+  brokerAddress: broker.emqx.io
   brokerPort: 1883
   isEncrypted: 0
   certificateName: 
