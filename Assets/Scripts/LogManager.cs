@@ -64,9 +64,9 @@ namespace CompasXR.Systems
             string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
             using (StreamWriter writer = new StreamWriter(logFilePath, true))
             {
-                writer.WriteLine($"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}]: {sceneName}: {type}: {logString}");
-                writer.WriteLine(stackTrace);
-                writer.WriteLine();
+                writer.WriteLine($"[{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}]: {sceneName}: {type}: {logString}");
+                //writer.WriteLine(stackTrace);
+                //writer.WriteLine();
             }
         }
     }
