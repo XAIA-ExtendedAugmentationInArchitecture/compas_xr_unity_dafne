@@ -583,6 +583,7 @@ namespace CompasXR.Core.Data
         public string device_id { get; set; }
         public string[] element_ids { get; set; }
         public string actor { get; set; }
+        public string category { get; set; }
         public Frame location { get; set; }
         public string geometry { get; set; }
         public bool is_built { get; set; }
@@ -615,6 +616,7 @@ namespace CompasXR.Core.Data
                 data.device_id = null;
             }
             data.actor = (string)dataDict["actor"];
+            data.category = (string)dataDict["category"];
             data.geometry = (string)dataDict["geometry"];
             data.is_built = (bool)dataDict["is_built"];
             data.is_planned = (bool)dataDict["is_planned"];

@@ -116,8 +116,8 @@ namespace CompasXR.Database.FirebaseManagment
                             else if (t.IsCompleted)
                             {
                                 Debug.Log("User updated successfully.");
-                                //HelpersExtensions.ChangeScene("HumanSupervision");
-                                HelpersExtensions.ChangeScene("MainGame");
+                                HelpersExtensions.ChangeScene("HumanSupervision");
+                                // HelpersExtensions.ChangeScene("MainGame");
                             }
                         });
                     }
@@ -133,8 +133,8 @@ namespace CompasXR.Database.FirebaseManagment
                             {
                                 Debug.Log("Device created successfully.");
                                 StaticData.User = playerName;
-                                //HelpersExtensions.ChangeScene("HumanSupervision");
-                                HelpersExtensions.ChangeScene("MainGame");
+                                HelpersExtensions.ChangeScene("HumanSupervision");
+                                // HelpersExtensions.ChangeScene("MainGame");
                             }
                         });
                     }
@@ -156,8 +156,8 @@ namespace CompasXR.Database.FirebaseManagment
                         {
                             Debug.Log("User created successfully.");
                             StaticData.User = playerName;
-                            //HelpersExtensions.ChangeScene("HumanSupervision");
-                            HelpersExtensions.ChangeScene("MainGame");
+                            HelpersExtensions.ChangeScene("HumanSupervision");
+                            // HelpersExtensions.ChangeScene("MainGame");
                         }
                     });
                 }

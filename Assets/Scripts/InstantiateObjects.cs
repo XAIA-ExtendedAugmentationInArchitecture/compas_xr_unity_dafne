@@ -42,6 +42,14 @@ namespace CompasXR.Core
         public Material InactiveRobotMaterial;
         public Material OutlineMaterial;
 
+        public Material XSmallMaterial;
+        public Material SmallMaterial;
+        public Material MediumMaterial;
+        public Material LargeMaterial;
+        public Material RandMaterial;
+
+        public GameObject AxisObject;
+
         //Parent Objects
         public GameObject QRMarkers; 
         public GameObject Elements;
@@ -90,6 +98,8 @@ namespace CompasXR.Core
             QRMarkers = GameObject.Find("QRMarkers");
             ActiveUserObjects = GameObject.Find("ActiveUserObjects");
 
+            AxisObject = GameObject.Find("Axis");
+
             //Find Initial Materials
             BuiltMaterial = GameObject.Find("Materials").FindObject("Built").GetComponentInChildren<Renderer>().material;
             UnbuiltMaterial = GameObject.Find("Materials").FindObject("Unbuilt").GetComponentInChildren<Renderer>().material;
@@ -102,6 +112,12 @@ namespace CompasXR.Core
             ActiveRobotMaterial = GameObject.Find("Materials").FindObject("ActiveRobot").GetComponentInChildren<Renderer>().material;
             InactiveRobotMaterial = GameObject.Find("Materials").FindObject("InactiveRobot").GetComponentInChildren<Renderer>().material;
             OutlineMaterial = GameObject.Find("Materials").FindObject("OutlineMaterial").GetComponentInChildren<Renderer>().material;
+
+            XSmallMaterial = GameObject.Find("Materials").FindObject("XSmall").GetComponentInChildren<Renderer>().material;
+            SmallMaterial = GameObject.Find("Materials").FindObject("Small").GetComponentInChildren<Renderer>().material;
+            MediumMaterial = GameObject.Find("Materials").FindObject("Medium").GetComponentInChildren<Renderer>().material;
+            LargeMaterial = GameObject.Find("Materials").FindObject("Large").GetComponentInChildren<Renderer>().material;
+            RandMaterial = GameObject.Find("Materials").FindObject("Rand").GetComponentInChildren<Renderer>().material;
             
             //Find GameObjects fo internal use
             IdxImage = GameObject.Find("ImageTagTemplates").FindObject("Circle");
@@ -164,7 +180,7 @@ namespace CompasXR.Core
             }
             if (Key == UIFunctionalities.CurrentStep)
             {
-                ColorHumanOrRobot(step.data.actor, step.data.is_built, geometryObject);
+                ColorHumanOrRobot(step.data.category, step.data.is_built, geometryObject);
                 UserIndicatorInstantiator(ref MyUserIndacator, elementPrefab, Key, Key, "ME", 0.25f);
             }
         }
@@ -216,7 +232,7 @@ namespace CompasXR.Core
                 Debug.LogWarning("The dictionary is null");
             }
         }   
-        public GameObject gameobjectTypeSelector(Step step)
+        public GameObject gameobjectTypeSelector(Step step, GameObject prefab = null)
         {
             /*
             * Method is used to determine the type of gameobject to instantiate
@@ -776,7 +792,7 @@ namespace CompasXR.Core
                     ColorBuiltOrUnbuilt(step.data.is_built, geometryObject);
                     break;
                 case VisulizationMode.ActorView:
-                    ColorHumanOrRobot(step.data.actor, step.data.is_built, geometryObject);
+                    ColorHumanOrRobot(step.data.category, step.data.is_built, geometryObject);
                     break;
             }
             switch (touchMode)
@@ -812,34 +828,39 @@ namespace CompasXR.Core
                 m_renderer.material = UnbuiltMaterial;
             }
         }
-        public void ColorHumanOrRobot(string actor, bool builtStatus, GameObject gamobj)
+        public void ColorHumanOrRobot(string category, bool builtStatus, GameObject gamobj)
         {
             /*
             * Method is used to color the object based on the actor and built status
             */            
             Renderer m_renderer= gamobj.GetComponentInChildren<Renderer>();
-            if (actor == "HUMAN")
+            if(builtStatus)
             {
-                if(builtStatus)
-                {
-                    m_renderer.material = HumanBuiltMaterial;
-                }
-                else
-                {
-                    m_renderer.material = HumanUnbuiltMaterial; 
-                }
+                m_renderer.material = HumanBuiltMaterial;
+                return;
             }
-            else
+            if (category == "XSmall")
             {
-                if(builtStatus)
-                {
-                    m_renderer.material = RobotBuiltMaterial;
-                }
-                else
-                {
-                    m_renderer.material = RobotUnbuiltMaterial;
-                }
+                m_renderer.material = XSmallMaterial;
             }
+            else if (category == "Small")
+            {
+                m_renderer.material = SmallMaterial;
+            }
+            else if (category == "Medium")
+            {
+                m_renderer.material = MediumMaterial;
+            }
+            else if (category == "Large")
+            {
+                m_renderer.material = LargeMaterial;
+            }
+            else if (category == "Rand")
+            {
+                m_renderer.material = RandMaterial;
+            }
+
+            
         }
         public void ColorObjectByPriority(string SelectedPriority, string StepPriority,string Key, GameObject gamobj)
         {
@@ -902,7 +923,7 @@ namespace CompasXR.Core
 
                     if (gameObject != null && geometryObject != null && gameObject.name != UIFunctionalities.CurrentStep)
                     {
-                        ColorHumanOrRobot(entry.Value.data.actor, entry.Value.data.is_built, geometryObject);
+                        ColorHumanOrRobot(entry.Value.data.category, entry.Value.data.is_built, geometryObject);
 
                         //Check if other visibility options are on and need to be colored additionally.
                         if (UIFunctionalities.PriorityViewerToggleObject.GetComponent<Toggle>().isOn)
