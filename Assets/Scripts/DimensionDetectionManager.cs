@@ -324,7 +324,13 @@ namespace CompasXR.Communcation.MqttManagement
 
                 final_result = new FinalResult();
                 final_result.GetFinalResult(result, userID, category.ToString() );
-                det_group.text = category.ToString();
+                det_group.text = GetCategoryTextWithColor(category);
+
+                correctWidth.placeholder.GetComponent<TMPro.TMP_Text>().text = result.detected_dimensions[0].ToString("F2");
+                correctHeight.placeholder.GetComponent<TMPro.TMP_Text>().text = result.detected_dimensions[1].ToString("F2");
+                correctWidth.text = result.detected_dimensions[0].ToString("F2");
+                correctHeight.text = result.detected_dimensions[1].ToString("F2");
+
                 if (confidence != 100.0f)
                 {
                     det_dims.text = $"W: {result.detected_dimensions[0]} x H: {result.detected_dimensions[1]} cm - {confidence}%";
@@ -335,6 +341,23 @@ namespace CompasXR.Communcation.MqttManagement
                 }
                 
             }
+        }
+
+        private string GetCategoryTextWithColor(Category category)
+        {
+            /*
+            * Method is used to get the category text with color.
+            */
+            string color = "white";
+            switch (category)
+            {
+                case Category.XSmall: color = "#FFA500"; break;
+                case Category.Small: color = "blue"; break;
+                case Category.Medium: color = "green"; break;
+                case Category.Large: color = "blue"; break;
+                case Category.Rand: color = "#FF00FF"; break;
+            }
+            return $"<color={color}>{category}</color>";
         }
 
         private (Category, float) CalculateCategory(float[] detected_dimensions)
@@ -670,32 +693,6 @@ namespace CompasXR.Communcation.MqttManagement
             return currentQuantity;
         }
 
-
-        // void SetupCategoryListeners(int index, string name)
-        // {
-        //     dbReference_root.Child(name).ValueChanged += (sender, args) =>
-        //     {
-        //         if (args.DatabaseError != null)
-        //         {
-        //             Debug.LogError($"Error: {args.DatabaseError.Message}");
-        //             return;
-        //         }
-
-        //         if (args.Snapshot.Exists && int.TryParse(args.Snapshot.Value.ToString(), out int newValue))
-        //         {
-        //             categories[index].FindObject("Quantities").GetComponent<TMPro.TMP_Text>().text = newValue.ToString();
-        //         }
-        //     };
-        // }
-
-        // void SetupCategoryButtons(int index, string name)
-        // {
-        //     Button addButton = categories[index].FindObject("ButtonPlus").GetComponent<Button>();
-        //     addButton.onClick.AddListener(() => RegisterMaterial(name, true));
-
-        //     Button removeButton = categories[index].FindObject("ButtonMinus").GetComponent<Button>();
-        //     removeButton.onClick.AddListener(() => RegisterMaterial(name, false));
-        // }
 
         void SetupQuantityInput()
         {
