@@ -213,7 +213,7 @@ namespace CompasXR.UI
             UserObjects = GameObject.Find("ActiveUserObjects");     
 
             //Find AR and system management items
-            arCamera = GameObject.Find("XR Origin").FindObject("Camera Offset").FindObject("Main Camera").GetComponent<Camera>();
+            arCamera = GameObject.Find("MRTK XR Rig").FindObject("Camera Offset").FindObject("Main Camera").GetComponent<Camera>();
             rayManager = FindObjectOfType<ARRaycastManager>();
             currentOperatingSystem = OperatingSystemManager.GetCurrentOS();
 

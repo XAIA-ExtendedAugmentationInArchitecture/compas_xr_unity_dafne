@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Login.unity
     guid: fb5181efe1dec43bf8eb1785a4e9ae9b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/HumanSupervision.unity
     guid: 0149b1253ae88774b9c219ab466fc70d
   - enabled: 0
@@ -22,4 +22,5 @@ EditorBuildSettings:
     UnityEditor.XR.ARKit.ARKitSettings: {fileID: 11400000, guid: b4b124de908e4474e8d8403736c7cb92, type: 2}
     com.unity.xr.arfoundation.simulation_settings: {fileID: 11400000, guid: d6ab112be3b344149961928f2d3c7046, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 32707c92030e546aa988e30cfd22f638, type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: cbc77bea96bcfd74fb9873b14b144cf9, type: 2}
   m_UseUCBPForAssetBundles: 0
