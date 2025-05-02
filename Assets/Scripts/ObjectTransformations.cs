@@ -306,7 +306,7 @@ namespace CompasXR.Core
             */
             Rotation rotationData = GetRotationFromRightHand(targetXAxis, targetYAxis);
             Quaternion rotationQuaternion = GetQuaternionFromFrameDataForUnityObject(rotationData);
-            Quaternion rot = imageTargetGameObject.transform.rotation * Quaternion.Inverse(rotationQuaternion);
+            Quaternion rot = imageTargetGameObject.transform.rotation * Quaternion.Inverse(rotationQuaternion) *Quaternion.AngleAxis(90, Vector3.right);
             Vector3 positionData = ObjectTransformations.GetPositionFromRightHand(targetPoint);
             Vector3 pos = ObjectTransformations.TranslateGameObjectsPositionFromImageTarget(imageTargetGameObject, positionData, rotationQuaternion);
             gameObject.transform.position = pos;

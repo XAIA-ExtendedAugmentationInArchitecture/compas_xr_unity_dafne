@@ -45,6 +45,7 @@ namespace CompasXR.Core
             InstantiateObjects instantiateObjects = instantiateObjectsObject.AddComponent<InstantiateObjects>();
             CheckFirebase checkFirebase = checkFirebaseObject.AddComponent<CheckFirebase>();
             QRLocalization qrLocalization = qrLocalizationObject.GetComponent<QRLocalization>();
+            ARMarkerLocalizer arMarkerLocalizer = qrLocalizationObject.GetComponent<ARMarkerLocalizer>();
             MqttTrajectoryManager mqttTrajectoryReceiver = mqttTrajectoryReceiverObject.GetComponent<MqttTrajectoryManager>();
             TrajectoryVisualizer trajectoryVisualizer = trajectoryVisualizerObject.GetComponent<TrajectoryVisualizer>();
             
@@ -54,6 +55,7 @@ namespace CompasXR.Core
             databaseManager.ApplicationSettingUpdate += mqttTrajectoryReceiver.SetCompasXRTopics;
             databaseManager.DatabaseInitializedDict += instantiateObjects.OnDatabaseInitializedDict;
             databaseManager.TrackingDictReceived += qrLocalization.OnTrackingInformationReceived;
+            databaseManager.TrackingDictReceived += arMarkerLocalizer.OnTrackingInformationReceived;
             instantiateObjects.PlacedInitialElements += databaseManager.AddListeners;
             databaseManager.DatabaseUpdate += instantiateObjects.OnDatabaseUpdate;
             databaseManager.UserInfoUpdate += instantiateObjects.OnUserInfoUpdate;

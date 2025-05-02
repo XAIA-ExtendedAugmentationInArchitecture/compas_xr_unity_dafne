@@ -47,7 +47,7 @@ namespace CompasXR.Systems
             }
 
             string [] files = Directory.GetFiles(directoryPath);
-            if(files.Length >= 50)
+            if(files.Length >= 250)
             {
                 foreach (string file in files)
                 {

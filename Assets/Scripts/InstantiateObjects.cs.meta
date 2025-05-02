@@ -3,7 +3,32 @@ guid: 1b972f3121498f24eb51bac94d1803e4
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - databaseManager: {instanceID: 0}
+  - UIFunctionalities: {instanceID: 0}
+  - scrollSearchManager: {instanceID: 0}
+  - BuiltMaterial: {instanceID: 0}
+  - UnbuiltMaterial: {instanceID: 0}
+  - HumanBuiltMaterial: {instanceID: 0}
+  - HumanUnbuiltMaterial: {instanceID: 0}
+  - RobotBuiltMaterial: {instanceID: 0}
+  - RobotUnbuiltMaterial: {instanceID: 0}
+  - LockedObjectMaterial: {instanceID: 0}
+  - SearchedObjectMaterial: {instanceID: 0}
+  - ActiveRobotMaterial: {instanceID: 0}
+  - InactiveRobotMaterial: {instanceID: 0}
+  - OutlineMaterial: {instanceID: 0}
+  - XSmallMaterial: {instanceID: 0}
+  - SmallMaterial: {instanceID: 0}
+  - MediumMaterial: {instanceID: 0}
+  - LargeMaterial: {instanceID: 0}
+  - RandMaterial: {instanceID: 0}
+  - AxisObject: {fileID: 532015776140386618, guid: 86e108a09d611e84dabe8b9cb19f2445, type: 3}
+  - QRMarkers: {instanceID: 0}
+  - Elements: {instanceID: 0}
+  - ActiveUserObjects: {instanceID: 0}
+  - MyUserIndacator: {instanceID: 0}
+  - ObjectLengthsTags: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

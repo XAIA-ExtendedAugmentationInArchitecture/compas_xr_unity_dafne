@@ -17,6 +17,9 @@ using CompasXR.Robots;
 using CompasXR.Robots.MqttData;
 using Unity.VisualScripting;
 
+using MixedReality.Toolkit;
+using MixedReality.Toolkit.UX;
+
 namespace CompasXR.UI
 {
     /*
@@ -52,7 +55,10 @@ namespace CompasXR.UI
         public GameObject NextGeometryButtonObject;
         public GameObject PreviousGeometryButtonObject;
         public GameObject PreviewGeometrySliderObject;
-        public Slider PreviewGeometrySlider;
+        public UnityEngine.UI.Slider PreviewGeometrySlider;
+
+        public GameObject PreviewPreviousGeometrySliderObject;
+        public UnityEngine.UI.Slider PreviewPreviousGeometrySlider;
         public GameObject IsBuiltPanelObjects;
         public GameObject IsBuiltButtonObject;
         public GameObject IsbuiltButtonImage;
@@ -83,7 +89,7 @@ namespace CompasXR.UI
 
         //Visualizer Menu Objects
         private GameObject VisualzierBackground;
-        private GameObject PreviewActorToggleObject;
+        public GameObject PreviewActorToggleObject;
         public GameObject IDToggleObject;
         public GameObject RobotToggleObject;
         public GameObject ObjectLengthsToggleObject;
@@ -131,7 +137,7 @@ namespace CompasXR.UI
         public GameObject ApproveTrajectoryButtonObject;
         public GameObject RejectTrajectoryButtonObject;
         public GameObject TrajectoryReviewSliderObject;
-        public Slider TrajectoryReviewSlider;
+        public UnityEngine.UI.Slider TrajectoryReviewSlider;
         public GameObject ExecuteTrajectoryButtonObject;
         public GameObject RobotSelectionControlObjects;
         public GameObject RobotSelectionDropdownObject;
@@ -186,7 +192,7 @@ namespace CompasXR.UI
             /*
             * Update : Method is used to update the UI elements and check for touch option activation.
             */
-            TouchSearchControler();
+            //TouchSearchControler();
         }
 
         /////////////////////////////////// UI Control & OnStart methods ////////////////////////////////////////////////////
@@ -238,6 +244,7 @@ namespace CompasXR.UI
             UserInterface.FindButtonandSetOnClickAction(ConstantUIPanelObjects, ref NextGeometryButtonObject, "Next_Geometry", NextStepButton);
             UserInterface.FindButtonandSetOnClickAction(ConstantUIPanelObjects, ref PreviousGeometryButtonObject, "Previous_Geometry", PreviousStepButton);
             UserInterface.FindSliderandSetOnValueChangeAction(CanvasObject, ref PreviewGeometrySliderObject, ref PreviewGeometrySlider, "GeometrySlider", PreviewGeometrySliderSetVisibilty);
+            UserInterface.FindSliderandSetOnValueChangeAction(CanvasObject, ref PreviewPreviousGeometrySliderObject, ref PreviewPreviousGeometrySlider, "GeometrySliderBuilt", PreviewPreviousGeometrySliderSetVisibilty);
             IsBuiltPanelObjects = ConstantUIPanelObjects.FindObject("IsBuiltPanel"); 
             UserInterface.FindButtonandSetOnClickAction(IsBuiltPanelObjects, ref IsBuiltButtonObject, "IsBuiltButton", () => ModifyStepBuildStatus(CurrentStep));
             IsbuiltButtonImage = IsBuiltButtonObject.FindObject("Image");
@@ -246,7 +253,7 @@ namespace CompasXR.UI
 
             //Find Text Objects
             CurrentStepTextObject = GameObject.Find("Current_Index_Text");
-            CurrentStepText = CurrentStepTextObject.GetComponent<TMPro.TMP_Text>();
+            //CurrentStepText = CurrentStepTextObject.GetComponent<TMPro.TMP_Text>();
             GameObject LastBuiltIndexTextObject = GameObject.Find("LastBuiltElement_Text");
             LastBuiltIndexText = LastBuiltIndexTextObject.GetComponent<TMPro.TMP_Text>();
             GameObject CurrentPriorityTextObject = GameObject.Find("CurrentPriority_Text");
@@ -484,6 +491,7 @@ namespace CompasXR.UI
                 if(CurrentStepInt < databaseManager.BuildingPlanDataItem.steps.Count - 1)
                 {
                     SetCurrentStep((CurrentStepInt + 1).ToString());
+                    Debug.Log($"Next Step: {CurrentStep+1}");
                 }  
             }
         }
@@ -565,6 +573,7 @@ namespace CompasXR.UI
 
             //Update preview geometry and is built graphics
             PreviewGeometrySliderSetVisibilty(PreviewGeometrySlider.value);
+            PreviewPreviousGeometrySliderSetVisibilty(PreviewPreviousGeometrySlider.value);
             IsBuiltButtonGraphicsControler(step.data.is_built, step.data.priority);
         }
         public void PreviousStepButton()
@@ -578,6 +587,7 @@ namespace CompasXR.UI
                 if(CurrentStepInt > 0)
                 {
                     SetCurrentStep((CurrentStepInt - 1).ToString());
+                    Debug.Log($"Previous Step: {CurrentStep+1}");
                 }  
             }       
 
@@ -615,6 +625,39 @@ namespace CompasXR.UI
                 }
             }
         }
+        public void PreviewPreviousGeometrySliderSetVisibilty(float value)
+        {
+            /*
+            * Method is used to set the visibility of geometry in the scene based on the slider value.
+            */
+            if (CurrentStep != null)
+            {
+                int max = Convert.ToInt16(CurrentStep);
+                float SliderValue = value;
+                int ElementsTotal = databaseManager.BuildingPlanDataItem.steps.Count;
+                float SliderMax = 1;
+                float SliderMin = 0;
+                float SliderRemaped = HelpersExtensions.Remap(SliderValue, SliderMin, SliderMax, 0, max); 
+
+                foreach(int index in Enumerable.Range(0, max))
+                {
+                    string elementName = index.ToString();
+                    int InstanceNumber = Convert.ToInt16(elementName);
+                    GameObject element = Elements.FindObject(elementName);
+                    if (element != null)
+                    {
+                        if (InstanceNumber > 1- SliderRemaped)
+                        {
+                            element.SetActive(true); 
+                        }
+                        else
+                        {
+                            element.SetActive(false);
+                        }
+                    }
+                }
+            }
+        }
         public void IsBuiltButtonGraphicsControler(bool builtStatus, int stepPriority)
         {
             /*
@@ -622,16 +665,19 @@ namespace CompasXR.UI
             */
             if (IsBuiltPanelObjects.activeSelf)
             {
-                if (builtStatus)
-                {
-                    IsbuiltButtonImage.SetActive(true);
-                    IsBuiltButtonObject.GetComponent<Image>().color = TranspGrey;
-                }
-                else
-                {
-                    IsbuiltButtonImage.SetActive(false);
-                    IsBuiltButtonObject.GetComponent<Image>().color = TranspWhite;
-                }
+                PressableButton toggle = gameObject.GetComponent<UIFunctionalitiesMRTK>().IsBuiltToggleButton;
+                toggle.ForceSetToggled(builtStatus);
+
+                // if (builtStatus)
+                // {
+                //     IsbuiltButtonImage.SetActive(true);
+                //     IsBuiltButtonObject.GetComponent<Image>().color = TranspGrey;
+                // }
+                // else
+                // {
+                //     IsbuiltButtonImage.SetActive(false);
+                //     IsBuiltButtonObject.GetComponent<Image>().color = TranspWhite;
+                // }
             }
         }
         public bool LocalPriorityChecker(Step step)
@@ -722,6 +768,7 @@ namespace CompasXR.UI
             {
                 if(step.data.is_built)
                 {
+                    Debug.Log($"ModifyStepBuildStatus: Unbuilding Step {key}.");
                     step.data.is_built = false;
                     int StepInt = Convert.ToInt16(key);
                     for(int i = StepInt; i >= 0; i--)
@@ -729,11 +776,13 @@ namespace CompasXR.UI
                         Step stepToCheck = databaseManager.BuildingPlanDataItem.steps[i.ToString()];
                         if(StepInt == 0)
                         {
+                            Debug.Log($"ModifyStepBuildStatus: Reached the first step. Setting current priority to {stepToCheck.data.priority}.");
                             SetCurrentPriority(stepToCheck.data.priority.ToString());
                             break;   
                         }
                         if(stepToCheck.data.is_built)
                         {
+                            Debug.Log($"ModifyStepBuildStatus: Found last built step at index {i}. Setting current priority to {stepToCheck.data.priority}.");
                             databaseManager.BuildingPlanDataItem.LastBuiltIndex = i.ToString();
                             SetLastBuiltText(i.ToString());
                             SetCurrentPriority(stepToCheck.data.priority.ToString());
@@ -743,6 +792,7 @@ namespace CompasXR.UI
                 }
                 else
                 {
+                    Debug.Log($"ModifyStepBuildStatus: Building Step {key}.");
                     step.data.is_built = true;
                     databaseManager.BuildingPlanDataItem.LastBuiltIndex = key;
                     SetLastBuiltText(key);
@@ -758,7 +808,7 @@ namespace CompasXR.UI
             }
             else
             {
-                Debug.Log("ModifyStepBuildStatus: Priority Check will not allow this step to be built.");
+                Debug.Log($"ModifyStepBuildStatus: Priority check failed for step {key}. Modification not allowed.");
             }
         }
         public void SetLastBuiltText(string key)
@@ -1207,27 +1257,27 @@ namespace CompasXR.UI
             * Additionally it will reposition the ID tags based on priority viewer the toggle value.
             */
             Debug.Log("ToggleID: ID Toggle Pressed value set to " + toggle.GetComponent<Toggle>().isOn);
-            if (toggle != null && IDToggleObject != null)
-            {
-                if(toggle.isOn)
-                {
-                    ARSpaceTextControler(true, "IdxText", ref IDTagIsOffset, "IdxImage", PriorityViewerToggleObject.GetComponent<Toggle>().isOn, 0.155f); //bool verticlReposition, float distance
-                    UserInterface.SetUIObjectColor(IDToggleObject, Yellow);
-                }
-                else
-                {
-                    ARSpaceTextControler(false, "IdxText", ref IDTagIsOffset, "IdxImage");
-                    if(PriorityViewerToggleObject.GetComponent<Toggle>().isOn && PriorityTagIsOffset)
-                    {
-                        ARSpaceTextControler(true, "PriorityText", ref PriorityTagIsOffset, "PriorityImage");
-                    }
-                    UserInterface.SetUIObjectColor(IDToggleObject, White);
-                }
-            }
-            else
-            {
-                Debug.LogWarning("ToggleID: Could not find ID Toggle or ID Toggle Object.");
-            }
+            // if (toggle != null && IDToggleObject != null)
+            // {
+            //     if(toggle.isOn)
+            //     {
+            //         ARSpaceTextControler(true, "IdxText", ref IDTagIsOffset, "IdxImage", PriorityViewerToggleObject.GetComponent<Toggle>().isOn, 0.155f); //bool verticlReposition, float distance
+            //         UserInterface.SetUIObjectColor(IDToggleObject, Yellow);
+            //     }
+            //     else
+            //     {
+            //         ARSpaceTextControler(false, "IdxText", ref IDTagIsOffset, "IdxImage");
+            //         if(PriorityViewerToggleObject.GetComponent<Toggle>().isOn && PriorityTagIsOffset)
+            //         {
+            //             ARSpaceTextControler(true, "PriorityText", ref PriorityTagIsOffset, "PriorityImage");
+            //         }
+            //         UserInterface.SetUIObjectColor(IDToggleObject, White);
+            //     }
+            // }
+            // else
+            // {
+            //     Debug.LogWarning("ToggleID: Could not find ID Toggle or ID Toggle Object.");
+            // }
         }
         public void ARSpaceTextControler(bool Visibility, string textObjectBaseName, ref bool tagIsOffset, string imageObjectBaseName = null, bool verticalReposition = false, float? verticalOffset = null)
         {
@@ -1451,11 +1501,12 @@ namespace CompasXR.UI
                     PreviewGeometrySlider.value = 1;
                 }
                 PreviewGeometrySlider.interactable = false;
-                ARSpaceTextControler(true, "PriorityText", ref PriorityTagIsOffset, "PriorityImage", IDToggleObject.GetComponent<Toggle>().isOn, 0.155f);
+                //ARSpaceTextControler(true, "PriorityText", ref PriorityTagIsOffset, "PriorityImage", IDToggleObject.GetComponent<Toggle>().isOn, 0.155f);
                 PriorityViewerUIGraphicsController(true, databaseManager.CurrentPriority);
                 SelectedPriority = databaseManager.CurrentPriority;
                 instantiateObjects.ApplyColorBasedOnPriority(databaseManager.CurrentPriority);
-                UserInterface.SetUIObjectColor(PriorityViewerToggleObject, Yellow);
+                //UserInterface.SetUIObjectColor(PriorityViewerToggleObject, Yellow);
+
             }
             else
             {
@@ -1463,14 +1514,14 @@ namespace CompasXR.UI
                 PreviewGeometrySlider.interactable = true;
                 instantiateObjects.ApplyColorBasedOnAppModes();
                 SelectedPriority = "None";
-                ARSpaceTextControler(false, "PriorityText", ref PriorityTagIsOffset, "PriorityImage");
+                //RSpaceTextControler(false, "PriorityText", ref PriorityTagIsOffset, "PriorityImage");
 
-                if(IDToggleObject.GetComponent<Toggle>().isOn && IDTagIsOffset)
-                {
-                    ARSpaceTextControler(true, "IdxText", ref IDTagIsOffset, "IdxImage");
-                }
+                // if(IDToggleObject.GetComponent<Toggle>().isOn && IDTagIsOffset)
+                // {
+                //     ARSpaceTextControler(true, "IdxText", ref IDTagIsOffset, "IdxImage");
+                // }
                 PriorityViewerUIGraphicsController(false);
-                UserInterface.SetUIObjectColor(PriorityViewerToggleObject, White);
+                //UserInterface.SetUIObjectColor(PriorityViewerToggleObject, White);
             }
         }
         public void PriorityViewerUIGraphicsController(bool? isVisible, string selectedPrioritytext=null)
@@ -2121,7 +2172,7 @@ namespace CompasXR.UI
                 Debug.LogError($"Toggle Constructer: Could not Set OnValueChanged Action because search object is null for {unityObjectName}");
             }
         }
-        public static void FindSliderandSetOnValueChangeAction(GameObject searchObject, ref GameObject sliderParentObjectReference, ref Slider sliderObjectReference, string unityObjectName, UnityAction<float> customAction)
+        public static void FindSliderandSetOnValueChangeAction(GameObject searchObject, ref GameObject sliderParentObjectReference, ref UnityEngine.UI.Slider sliderObjectReference, string unityObjectName, UnityAction<float> customAction)
         {
             /*
             * Find Slider and Set On Value Change Action is used to find the slider and set the on value change action.
@@ -2130,7 +2181,7 @@ namespace CompasXR.UI
             if(searchObject != null)
             {
                 sliderParentObjectReference = searchObject.FindObject(unityObjectName);
-                sliderObjectReference = sliderParentObjectReference.GetComponent<Slider>();
+                sliderObjectReference = sliderParentObjectReference.GetComponent<UnityEngine.UI.Slider>();
                 sliderObjectReference.onValueChanged.AddListener(customAction);
             }
             else

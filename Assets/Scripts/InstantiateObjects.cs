@@ -98,7 +98,7 @@ namespace CompasXR.Core
             QRMarkers = GameObject.Find("QRMarkers");
             ActiveUserObjects = GameObject.Find("ActiveUserObjects");
 
-            AxisObject = GameObject.Find("Axis");
+            AxisObject = GameObject.Find("PrefabObjects").FindObject("Axis");
 
             //Find Initial Materials
             BuiltMaterial = GameObject.Find("Materials").FindObject("Built").GetComponentInChildren<Renderer>().material;
@@ -137,7 +137,7 @@ namespace CompasXR.Core
             Debug.Log($"PlaceElement: {step.data.element_ids[0]} from Step: {Key}");
 
             //Load the correct object based on the step information
-            GameObject geometry_object = gameobjectTypeSelector(step);
+            GameObject geometry_object = gameobjectTypeSelector(step, AxisObject);
             if (geometry_object == null)
             {
                 Debug.LogError($"PlaceElement: This key:{step.data.element_ids[0]} from Step: {Key} is null");
@@ -160,24 +160,24 @@ namespace CompasXR.Core
             
             //Set AR Text objects for the element
             float heightOffset = getHeightOffsetByStepGeometryType(step, step.data.geometry);
-            CreateTextForGameObjectOnInstantiation(elementPrefab, step.data.element_ids[0], heightOffset, $"{Key}", $"{elementPrefab.name}IdxText", 0.5f);
-            CreateBackgroundImageForText(ref IdxImage, elementPrefab,  heightOffset, $"{elementPrefab.name}IdxImage", false);
-            CreateTextForGameObjectOnInstantiation(elementPrefab, step.data.element_ids[0], heightOffset, $"{step.data.priority}", $"{elementPrefab.name}PriorityText", 0.5f);
-            CreateBackgroundImageForText(ref PriorityImage, elementPrefab, heightOffset, $"{elementPrefab.name}PriorityImage", false);
+            //CreateTextForGameObjectOnInstantiation(elementPrefab, step.data.element_ids[0], heightOffset, $"{Key}", $"{elementPrefab.name}IdxText", 0.5f);
+            //CreateBackgroundImageForText(ref IdxImage, elementPrefab,  heightOffset, $"{elementPrefab.name}IdxImage", false);
+            //CreateTextForGameObjectOnInstantiation(elementPrefab, step.data.element_ids[0], heightOffset, $"{step.data.priority}", $"{elementPrefab.name}PriorityText", 0.5f);
+            //CreateBackgroundImageForText(ref PriorityImage, elementPrefab, heightOffset, $"{elementPrefab.name}PriorityImage", false);
 
             //Control color and visualization of the object
             ObjectColorandTouchEvaluater(visulizationController.VisulizationMode, visulizationController.TouchMode, step, Key, geometryObject);
-            if (UIFunctionalities.IDToggleObject.GetComponent<Toggle>().isOn)
-            {
-                elementPrefab.FindObject(elementPrefab.name + "IdxText").gameObject.SetActive(true);
-                elementPrefab.FindObject(elementPrefab.name + "IdxImage").gameObject.SetActive(true);
-            }
-            if (UIFunctionalities.PriorityViewerToggleObject.GetComponent<Toggle>().isOn)
-            {
-                ColorObjectByPriority(UIFunctionalities.SelectedPriority, step.data.priority.ToString(), Key, geometryObject);
-                elementPrefab.FindObject(elementPrefab.name + "PriorityText").gameObject.SetActive(true);
-                elementPrefab.FindObject(elementPrefab.name + "PriorityImage").gameObject.SetActive(true);
-            }
+            // if (UIFunctionalities.IDToggleObject.GetComponent<Toggle>().isOn)
+            // {
+            //     elementPrefab.FindObject(elementPrefab.name + "IdxText").gameObject.SetActive(true);
+            //     elementPrefab.FindObject(elementPrefab.name + "IdxImage").gameObject.SetActive(true);
+            // }
+            // if (UIFunctionalities.PriorityViewerToggleObject.GetComponent<Toggle>().isOn)
+            // {
+            //     ColorObjectByPriority(UIFunctionalities.SelectedPriority, step.data.priority.ToString(), Key, geometryObject);
+            //     elementPrefab.FindObject(elementPrefab.name + "PriorityText").gameObject.SetActive(true);
+            //     elementPrefab.FindObject(elementPrefab.name + "PriorityImage").gameObject.SetActive(true);
+            // }
             if (Key == UIFunctionalities.CurrentStep)
             {
                 ColorHumanOrRobot(step.data.category, step.data.is_built, geometryObject);
@@ -247,6 +247,29 @@ namespace CompasXR.Core
             }
 
             GameObject element;
+
+            if (prefab != null)
+            {
+                element = new GameObject();
+                element.transform.position = Vector3.zero;
+                element.transform.rotation = Quaternion.identity;
+                float cylinderRadius = databaseManager.AssemblyDataDict[step.data.element_ids[0].ToString()].attributes.width;
+                float cylinderHeight = databaseManager.AssemblyDataDict[step.data.element_ids[0].ToString()].attributes.height;
+                Vector3 cylindersize = new Vector3(0.25f, cylinderHeight, 0.25f);
+
+                GameObject cylinderObject = Instantiate(prefab);
+                cylinderObject.transform.localScale = Vector3.one;
+                cylinderObject.transform.localScale = cylindersize;
+                cylinderObject.name = step.data.element_ids[0].ToString() + " Geometry";
+
+                BoxCollider cylinderCollider = cylinderObject.AddComponent<BoxCollider>();
+                Vector3 cylinderColliderSize = new Vector3(0.1f*1.1f, cylinderCollider.size.y*1.2f, 0.1f*1.1f);
+                cylinderCollider.size = cylinderColliderSize;
+                cylinderObject.transform.SetParent(element.transform);
+                cylinderObject.SetActive(true);
+                return element;
+            }
+
 
             switch (step.data.geometry)
                 {
@@ -1158,11 +1181,13 @@ namespace CompasXR.Core
             * Method is used to instantiate the object from the prefab reference
             */
             GameObject instantiatedObject = GameObject.Instantiate(prefabReference, position, rotation);
+            
             instantiatedObject.name = gameObjectName;
             if (parentObject != null)
             {
                 instantiatedObject.transform.SetParent(parentObject.transform);
             }
+            instantiatedObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
             return instantiatedObject;
         }
         public static GameObject InstantiateObjectFromRightHandFrameData(GameObject gameObject, float[] pointData, float[] xAxisData, float[] yAxisData, bool isObj, bool z_remapped)

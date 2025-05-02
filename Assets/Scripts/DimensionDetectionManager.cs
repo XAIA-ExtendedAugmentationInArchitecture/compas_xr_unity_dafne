@@ -115,12 +115,12 @@ namespace CompasXR.Communcation.MqttManagement
             base.Start();
             OnStartorRestartInitilization();
 
-            AddListenerOptionButtons(CorrectGroupOptionsButtons);
+            //AddListenerOptionButtons(CorrectGroupOptionsButtons);
 
             computeButton.onClick.AddListener(() => SendComputerRequest ());
-            correctButton.onClick.AddListener(() => RegisterCorrectionAttempt());
+            //correctButton.onClick.AddListener(() => RegisterCorrectionAttempt());
             acceptButton.onClick.AddListener(async () => await AcceptSubmitAction());
-            submitButton.onClick.AddListener(async () => await AcceptSubmitAction(true));
+            //submitButton.onClick.AddListener(async () => await AcceptSubmitAction(true));
 
             previousButton.onClick.AddListener(async () =>
             {
@@ -326,10 +326,13 @@ namespace CompasXR.Communcation.MqttManagement
                 final_result.GetFinalResult(result, userID, category.ToString() );
                 det_group.text = GetCategoryTextWithColor(category);
 
-                correctWidth.placeholder.GetComponent<TMPro.TMP_Text>().text = result.detected_dimensions[0].ToString("F2");
-                correctHeight.placeholder.GetComponent<TMPro.TMP_Text>().text = result.detected_dimensions[1].ToString("F2");
-                correctWidth.text = result.detected_dimensions[0].ToString("F2");
-                correctHeight.text = result.detected_dimensions[1].ToString("F2");
+                float minWidth = Mathf.Min(result.detected_dimensions[0], result.detected_dimensions[1]);
+                float maxHeight = Mathf.Max(result.detected_dimensions[0], result.detected_dimensions[1]);
+
+                correctWidth.placeholder.GetComponent<TMPro.TMP_Text>().text = minWidth.ToString("F2");
+                correctHeight.placeholder.GetComponent<TMPro.TMP_Text>().text = maxHeight.ToString("F2");
+                correctWidth.text = minWidth.ToString("F2");
+                correctHeight.text = maxHeight.ToString("F2");
 
                 if (confidence != 100.0f)
                 {
@@ -354,7 +357,7 @@ namespace CompasXR.Communcation.MqttManagement
                 case Category.XSmall: color = "#FFA500"; break;
                 case Category.Small: color = "blue"; break;
                 case Category.Medium: color = "green"; break;
-                case Category.Large: color = "blue"; break;
+                case Category.Large: color = "red"; break;
                 case Category.Rand: color = "#FF00FF"; break;
             }
             return $"<color={color}>{category}</color>";
@@ -368,7 +371,7 @@ namespace CompasXR.Communcation.MqttManagement
             float height = Mathf.Max(detected_dimensions[0], detected_dimensions[1]); // in cm
             float width = Mathf.Min(detected_dimensions[0], detected_dimensions[1]);  // in cm
 
-            float threshold_height = 2.0f;
+            float threshold_height = 5.0f;
             float expected_height = 40.0f;
             float threshold_width = 0.5f;
 
@@ -553,6 +556,7 @@ namespace CompasXR.Communcation.MqttManagement
             * Method is used to create a message to be sent to the MQTT broker.
             */
             attempt++;
+            det_group.text = "Wait";
             Dictionary<string, object> message = GetComputeMessage(new int[] { currentIndex, currentIndex + quantityToAdd - 1 }, attempt);
             PublishToTopic("/dafne/material_registration/actions", message);
         }
@@ -579,6 +583,15 @@ namespace CompasXR.Communcation.MqttManagement
                 return;
             }
             final_result.timestamp_submit = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+
+            if (correctWidth.text == correctWidth.placeholder.GetComponent<TMPro.TMP_Text>().text && correctHeight.text == correctHeight.placeholder.GetComponent<TMPro.TMP_Text>().text)
+            {
+                isCorrected = false;
+            }
+            else
+            {
+                isCorrected = true;
+            }
             await RegisterMaterial(final_result, isCorrected);
             
             await InitializeCategoryData();
@@ -662,10 +675,13 @@ namespace CompasXR.Communcation.MqttManagement
             {
                 iDsText.text = $"IDs {currentIndex} - {currentIndex + quantityToAdd -1}";
             }
-            det_group.text = "---";
+            
             det_dims.text = $"W: 0.0 x H: 0.0 cm";
-            correctWidth.text = "00.00";
-            correctHeight.text = "00.00";
+            correctWidth.placeholder.GetComponent<TMPro.TMP_Text>().text = "00.00";
+            correctHeight.placeholder.GetComponent<TMPro.TMP_Text>().text = "00.00";
+            correctWidth.text = "";
+            correctHeight.text = "";
+            det_group.text = "-->>";
             attempt = 0;
             final_result = null;
 
@@ -721,14 +737,25 @@ namespace CompasXR.Communcation.MqttManagement
             correctWidth.contentType = TMPro.TMP_InputField.ContentType.DecimalNumber;
             correctWidth.onValueChanged.AddListener((value) =>
             {
+
                 if (string.IsNullOrWhiteSpace(value) || !float.TryParse(value, out float width))
                 {
-                    width = 00.00f;
+                    width = float.Parse(correctWidth.placeholder.GetComponent<TMPro.TMP_Text>().text);
+                    
                 }
+                float height = string.IsNullOrWhiteSpace(correctHeight.text) || !float.TryParse(correctHeight.text, out float parsedHeight)
+                    ? float.Parse(correctHeight.placeholder.GetComponent<TMPro.TMP_Text>().text)
+                    : parsedHeight;
+
+                (Category category, float confidence) = CalculateCategory(new float[] { width, height });
+                
                 if (final_result != null)
                 {
                     final_result.corrected_dimensions[0] = width;
+                    final_result.corrected_category = category.ToString(); 
+                    det_group.text = GetCategoryTextWithColor(category);  
                 }
+                RegisterCorrectionAttempt();
             });
             correctHeight.placeholder.GetComponent<TMPro.TMP_Text>().text = "00.00";
             correctHeight.contentType = TMPro.TMP_InputField.ContentType.DecimalNumber;
@@ -736,12 +763,24 @@ namespace CompasXR.Communcation.MqttManagement
             {
                 if (string.IsNullOrWhiteSpace(value) || !float.TryParse(value, out float height))
                 {
-                    height = 00.00f;
+                    height = float.Parse(correctHeight.placeholder.GetComponent<TMPro.TMP_Text>().text);
                 }
+
+                float width = string.IsNullOrWhiteSpace(correctWidth.text) || !float.TryParse(correctWidth.text, out float parsedHeight)
+                    ? float.Parse(correctWidth.placeholder.GetComponent<TMPro.TMP_Text>().text)
+                    : parsedHeight;
+
+                (Category category, float confidence) = CalculateCategory(new float[] { width, height });
+
+                //det_group.text = GetCategoryTextWithColor(category);
+
                 if (final_result != null)
                 {
                     final_result.corrected_dimensions[1] = height;
+                    final_result.corrected_category = category.ToString();
+                    det_group.text = GetCategoryTextWithColor(category);
                 }
+                RegisterCorrectionAttempt();
             });
             
         }

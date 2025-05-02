@@ -56,7 +56,8 @@ namespace CompasXR.Database.FirebaseManagment
                     {
                         Debug.Log("InitializeFirebase: Firebase Initialized Successfully");
                         mqttConfigManager.Disconnect();
-                        HelpersExtensions.ChangeScene("Login");
+                        // HelpersExtensions.ChangeScene("Login");
+                        HelpersExtensions.ChangeScene("LoginMRTK");
                     }
                     else
                     {

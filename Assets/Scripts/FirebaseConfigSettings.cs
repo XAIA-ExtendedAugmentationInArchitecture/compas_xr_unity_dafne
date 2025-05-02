@@ -35,6 +35,7 @@ namespace CompasXR.Database.FirebaseManagment
         //////////////////////////// Monobehaviour Methods //////////////////////////////
         void Awake()
         {
+            return;
             applicationIdInput = GameObject.Find("appId").GetComponent<TMP_InputField>();
             apiKeyInput = GameObject.Find("apiKey").GetComponent<TMP_InputField>();
             databaseUrlInput = GameObject.Find("databaseUrl").GetComponent<TMP_InputField>();
@@ -51,6 +52,7 @@ namespace CompasXR.Database.FirebaseManagment
         }
         void Start()
         { 
+            return;
             UpdateInputFields();
             LoadInputs();
             UpdateFirebaseManagerConfigSettings();
