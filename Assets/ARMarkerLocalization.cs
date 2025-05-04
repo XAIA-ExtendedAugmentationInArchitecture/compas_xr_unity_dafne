@@ -53,6 +53,7 @@ namespace CompasXR.Core
             ObjectManipulator objManipulator = StructureParent.GetComponent<ObjectManipulator>();
             objManipulator.lastSelectExited.AddListener(OnLastSelectExited);
             BoundingBox.SetActive(false);
+            objManipulator.enabled = false;
 
             var persistedObjects = GameObject.FindObjectOfType<PersistAcrossScenes>();
             if (persistedObjects != null)
@@ -130,7 +131,7 @@ namespace CompasXR.Core
         {
             MoveIsOn = !MoveIsOn;
             var moveConstraint = AxisFlags.YAxis;
-            var rotationConstraint = AxisFlags.XAxis | AxisFlags.YAxis | AxisFlags.ZAxis;
+            
 
             Debug.Log("Movement for Localization is: " + MoveIsOn);
 
@@ -138,9 +139,13 @@ namespace CompasXR.Core
             {
                 moveConstraint = AxisFlags.XAxis | AxisFlags.YAxis | AxisFlags.ZAxis;
             }
+            else
+            {
+                var rotationConstraint = AxisFlags.XAxis | AxisFlags.YAxis | AxisFlags.ZAxis;
+                StructureParent.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = rotationConstraint;
+            }
 
             StructureParent.GetComponent<MoveAxisConstraint>().ConstraintOnMovement = moveConstraint;
-            StructureParent.GetComponent<RotationAxisConstraint>().ConstraintOnRotation = rotationConstraint;
             ConstrainManipulation();
 
         }
@@ -181,36 +186,64 @@ namespace CompasXR.Core
         {
             if  (TrackingOn && QRCodeDataDict.Count > 0 && Elements != null && XR_Rig != null  && Trackables != null)
             {
-                Debug.Log("ARMarkerLocalizer level 2");
                 // Iterate through all children of Trackables
                 foreach (Transform child in Trackables.transform)
                 {
-                    // Check if the child has a component named ARMarker with a specific value
-                    string arMarkerText = child.GetComponent<ARMarker>().GetDecodedString();
-                    Debug.Log("ARMarker text: " + arMarkerText);
+                    // Use the latest seen QR code to localize the object
+                    Transform latestQRCode = null;
+                    float latestSeenTime = float.MinValue;
 
-                    if (arMarkerText!=null)
+                    foreach (Transform qrChild in Trackables.transform)
                     {
-                        Debug.Log("Found marker: " + arMarkerText);
-                        //from the string, get the characters after the underscore
-                        string key = arMarkerText = arMarkerText.Substring(arMarkerText.IndexOf("_") + 1);
-                        // Check if the key exists in the QRCodeDataDict
-                        if (!QRCodeDataDict.ContainsKey(key))
+                        var arMarker = qrChild.GetComponent<ARMarker>();
+                        if (arMarker != null && arMarker.lastSeenTime > latestSeenTime)
                         {
-                            Debug.Log("Key not found in QRCodeDataDict: " + key);
-                            continue; // Skip to the next child if the key is not found
+                            latestSeenTime = arMarker.lastSeenTime;
+                            latestQRCode = qrChild;
                         }
+                    }
+
+                    if (latestQRCode != null)
+                    {
+                        string arMarkerText = latestQRCode.GetComponent<ARMarker>().GetDecodedString();
+                        Debug.Log("Localizing object with QR code: " + arMarkerText);
+
+                        if (arMarkerText != null)
+                        {
+                            string key = arMarkerText.Substring(arMarkerText.IndexOf("_") + 1);
+
+                            if (QRCodeDataDict.ContainsKey(key))
+                            {
+                                ObjectTransformations.TranslateGameObjectByImageTarget(Elements, latestQRCode.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
+                                ObjectTransformations.TranslateGameObjectByImageTarget(StructureParent, latestQRCode.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
+                                ObjectTransformations.TranslateGameObjectByImageTarget(UserObjects, latestQRCode.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
+                            }
+                            else
+                            {
+                                Debug.Log("Key not found in QRCodeDataDict: " + key);
+                            }
+                        }
+                    }
+
+                    // Check if the child has a component named ARMarker with a specific value
+                    // string arMarkerText = child.GetComponent<ARMarker>().GetDecodedString();
+
+                    // if (arMarkerText!=null)
+                    // {
+                    //     //from the string, get the characters after the underscore
+                    //     string key = arMarkerText = arMarkerText.Substring(arMarkerText.IndexOf("_") + 1);
+                    //     // Check if the key exists in the QRCodeDataDict
+                    //     if (!QRCodeDataDict.ContainsKey(key))
+                    //     {
+                    //         Debug.Log("Key not found in QRCodeDataDict: " + key);
+                    //         continue; // Skip to the next child if the key is not found
+                    //     }
                         
-                        ObjectTransformations.TranslateGameObjectByImageTarget(Elements, child.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
-                        ObjectTransformations.TranslateGameObjectByImageTarget(StructureParent, child.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
-                        ObjectTransformations.TranslateGameObjectByImageTarget(UserObjects, child.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
+                    //     ObjectTransformations.TranslateGameObjectByImageTarget(Elements, child.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
+                    //     ObjectTransformations.TranslateGameObjectByImageTarget(StructureParent, child.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
+                    //     ObjectTransformations.TranslateGameObjectByImageTarget(UserObjects, child.gameObject, QRCodeDataDict[key].part.frame.point, QRCodeDataDict[key].part.frame.xaxis, QRCodeDataDict[key].part.frame.yaxis);
 
-                        // Elements.transform.rotation *= offsetRotation;
-                        // StructureParent.transform.rotation *= offsetRotation;
-                        // UserObjects.transform.rotation *= offsetRotation;
-
-                        return; // Exit the loop once a marker is found
-                    }              
+                    // }              
                 }                    
             }    
         }
@@ -221,7 +254,7 @@ namespace CompasXR.Core
             * Method is used to update the QRCodeDataDict
             * with the data received from the QR code tracking event.
             */
-            Debug.Log("OnTrackingInformationReceived: Number of QR codes stored as a dict= " + e.QRCodeDataDict.Count);
+            //Debug.Log("OnTrackingInformationReceived: Number of QR codes stored as a dict= " + e.QRCodeDataDict.Count);
             QRCodeDataDict = e.QRCodeDataDict;
         }
     }

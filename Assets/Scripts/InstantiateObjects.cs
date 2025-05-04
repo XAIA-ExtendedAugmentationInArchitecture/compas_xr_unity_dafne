@@ -134,7 +134,7 @@ namespace CompasXR.Core
             * based on the step information from the building plan data.
             */
 
-            Debug.Log($"PlaceElement: {step.data.element_ids[0]} from Step: {Key}");
+            //Debug.Log($"PlaceElement: {step.data.element_ids[0]} from Step: {Key}");
 
             //Load the correct object based on the step information
             GameObject geometry_object = gameobjectTypeSelector(step, AxisObject);
@@ -216,7 +216,7 @@ namespace CompasXR.Core
             */
             if (BuildingPlanDataDict != null)
             {
-                Debug.Log($"placeElementsDict: Number of key-value pairs in the dictionary = {BuildingPlanDataDict.Count}");
+                //Debug.Log($"placeElementsDict: Number of key-value pairs in the dictionary = {BuildingPlanDataDict.Count}");
                 foreach (KeyValuePair<string, Step> entry in BuildingPlanDataDict)
                 {
                     if (entry.Value != null)
@@ -339,7 +339,7 @@ namespace CompasXR.Core
                         return null;
                 }
 
-                Debug.Log($"gameobjectTypeSelector: Created Element of type {step.data.geometry}");
+                //Debug.Log($"gameobjectTypeSelector: Created Element of type {step.data.geometry}");
                 return element;
             
         }
@@ -684,7 +684,7 @@ namespace CompasXR.Core
             * Method is used to update the priority line in the AR space
             * based on the selected priority.
             */
-            Debug.Log($"UpdatingPriorityLine: priority {selectedPriority}");
+            //Debug.Log($"UpdatingPriorityLine: priority {selectedPriority}");
             List<Vector3> priorityObjectPositions = GetPositionsFromPriorityGroup(selectedPriority);
             UpdateLinePositionsByVectorList(priorityObjectPositions, lineObject);
         }
@@ -912,7 +912,7 @@ namespace CompasXR.Core
             {
                 foreach (KeyValuePair<string, Step> entry in databaseManager.BuildingPlanDataItem.steps)
                 {
-                    GameObject gameObject = GameObject.Find(entry.Key);
+                    GameObject gameObject = Elements.FindObject(entry.Key);
                     GameObject geometryObject = gameObject.FindObject(entry.Value.data.element_ids[0] + " Geometry");
 
                     if (gameObject != null && geometryObject != null && gameObject.name != UIFunctionalities.CurrentStep)
@@ -941,7 +941,7 @@ namespace CompasXR.Core
             {
                 foreach (var entry in databaseManager.BuildingPlanDataItem.steps)
                 {
-                    GameObject gameObject = GameObject.Find(entry.Key);
+                    GameObject gameObject = Elements.FindObject(entry.Key);
                     GameObject geometryObject = gameObject.FindObject(entry.Value.data.element_ids[0] + " Geometry");
 
                     if (gameObject != null && geometryObject != null && gameObject.name != UIFunctionalities.CurrentStep)
@@ -970,7 +970,7 @@ namespace CompasXR.Core
             {
                 foreach (var entry in databaseManager.BuildingPlanDataItem.steps)
                 {
-                    GameObject gameObject = GameObject.Find(entry.Key);
+                    GameObject gameObject = Elements.FindObject(entry.Key);
                     GameObject geometryObject = gameObject.FindObject(entry.Value.data.element_ids[0] + " Geometry");
                     if (gameObject != null && geometryObject != null)
                     {
@@ -1038,7 +1038,7 @@ namespace CompasXR.Core
             {
                 foreach (KeyValuePair<string, Step> entry in databaseManager.BuildingPlanDataItem.steps)
                 {
-                    GameObject gameObject = GameObject.Find(entry.Key);
+                    GameObject gameObject = Elements.FindObject(entry.Key);
                     GameObject geometryObject = gameObject.FindObject(entry.Value.data.element_ids[0] + " Geometry");
 
                     if (gameObject != null && geometryObject != null && gameObject.name != UIFunctionalities.CurrentStep)

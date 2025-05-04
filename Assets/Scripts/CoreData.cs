@@ -212,7 +212,16 @@ namespace CompasXR.Core.Data
             Dictionary<string, object> partDict = jsonDataDict["part"] as Dictionary<string, object>;
             Dictionary<string, object> dataDict = partDict["data"] as Dictionary<string, object>;
             Dictionary<string, object> attributesDict = dataDict["attributes"] as Dictionary<string, object>;
-            Dictionary<string, object> shapeDict = attributesDict["shape"] as Dictionary<string, object>;
+            Dictionary<string, object> shapeDict;
+            if (attributesDict.ContainsKey("shape"))
+            {
+                shapeDict = attributesDict["shape"] as Dictionary<string, object>;
+            }
+            else
+            {
+                shapeDict = attributesDict;
+            }
+
             Dictionary<string, object> shapeDataDict = shapeDict["data"] as Dictionary<string, object>;
             string dtype = (string)shapeDict["dtype"];
 
@@ -476,7 +485,7 @@ namespace CompasXR.Core.Data
                 if (step_data.IsValidStep())
                 {
                     buidingPlanData.steps[key] = step_data;
-                    Debug.Log($"FromData: BuildingPlan Step {key} successfully added to the building plan dictionary");
+                    //Debug.Log($"FromData: BuildingPlan Step {key} successfully added to the building plan dictionary");
 
                     if (buidingPlanData.PriorityTreeDictionary.ContainsKey(step_data.data.priority.ToString()))
                     {

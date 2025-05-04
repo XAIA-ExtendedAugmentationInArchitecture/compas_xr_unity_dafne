@@ -463,7 +463,7 @@ namespace CompasXR.Core
 
             var key = args.Snapshot.Key;
             var childSnapshot = args.Snapshot.GetValue(true);
-            Debug.Log($"OnStepsChildAdded: A child added event was triggered for the key: {key} in the steps reference.");
+            //Debug.Log($"OnStepsChildAdded: A child added event was triggered for the key: {key} in the steps reference.");
 
             if (childSnapshot != null)
             {
@@ -473,11 +473,11 @@ namespace CompasXR.Core
                 {
                     if (BuildingPlanDataItem.steps.ContainsKey(key))
                     {
-                        Debug.Log($"OnStepsChildAdded: The key: {key} already exists in the dictionary");
+                        //Debug.Log($"OnStepsChildAdded: The key: {key} already exists in the dictionary");
                     }
                     else
                     {
-                        Debug.Log($"OnStepsChildAdded: The key: {key} does not exist in the dictionary added to priority tree in {newValue.data.priority.ToString()}");
+                        //Debug.Log($"OnStepsChildAdded: The key: {key} does not exist in the dictionary added to priority tree in {newValue.data.priority.ToString()}");
                         BuildingPlanDataItem.steps.Add(key, newValue);
 
                         if (BuildingPlanDataItem.PriorityTreeDictionary.ContainsKey(newValue.data.priority.ToString()))
@@ -494,7 +494,7 @@ namespace CompasXR.Core
                 }
                 else
                 {
-                    Debug.LogWarning($"OnStepsChildAdded: The Changed key is no longer valid and will not be added to the dictionary");
+                    //Debug.LogWarning($"OnStepsChildAdded: The Changed key is no longer valid and will not be added to the dictionary");
                 }
             }
         } 

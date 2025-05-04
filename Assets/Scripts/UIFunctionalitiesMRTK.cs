@@ -103,6 +103,7 @@ namespace CompasXR.UI
 
             NextGeometryButton.OnClicked.AddListener( 
                 () => {gameObject.GetComponent<UIFunctionalities>().NextStepButton();
+                    
                 });
             
             PreviousGeometryButton.OnClicked.AddListener( 
@@ -131,13 +132,17 @@ namespace CompasXR.UI
                 });
         
             BuiltSlider.OnValueUpdated.AddListener(
-                (SliderEventData data) =>
-                    gameObject.GetComponent<UIFunctionalities>().PreviewPreviousGeometrySliderSetVisibilty(data.NewValue)
+                (SliderEventData data) =>{
+                    gameObject.GetComponent<UIFunctionalities>().PreviewPreviousGeometrySliderSetVisibilty(data.NewValue);
+                    gameObject.GetComponent<UIFunctionalities>().PreviewPreviousGeometrySlider.value =data.NewValue;
+                }
             );
 
             UnBuiltSlider.OnValueUpdated.AddListener(
-                (SliderEventData data) =>
-                    gameObject.GetComponent<UIFunctionalities>().PreviewGeometrySliderSetVisibilty(data.NewValue)
+                (SliderEventData data) =>{
+                    gameObject.GetComponent<UIFunctionalities>().PreviewGeometrySliderSetVisibilty(data.NewValue);
+                    gameObject.GetComponent<UIFunctionalities>().PreviewGeometrySlider.value =data.NewValue;
+                }
             );
 
             LocalizeToggle.OnClicked.AddListener(

@@ -19,10 +19,21 @@ namespace CompasXR.Systems
         {
             DontDestroyOnLoad(gameObject);
 
-            string persistentDataPath = Application.persistentDataPath;
-            logDirectoryPath = Path.Combine(persistentDataPath, "CompasXRLogStorage");
-            string dateString = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-            logFilePath = Path.Combine(logDirectoryPath, $"{dateString}_{SystemInfo.deviceUniqueIdentifier}_log.txt");
+                // 1) Get the path to the Assets folder
+                string assetsPath = Application.dataPath;  // .../compas_xr_unity_dafne/Assets
+
+                // 2) Go up one level to the project root
+                string projectRoot = Directory.GetParent(assetsPath).FullName;  
+                // .../compas_xr_unity_dafne
+
+                // 3) Point at your Logs folder in the root
+                logDirectoryPath = Path.Combine(projectRoot, "Logs", "CompasXRLogStorage");
+                
+                // 4) Build your filename exactly as before
+                string dateString  = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+                logFilePath        = Path.Combine(logDirectoryPath,
+                                                $"{dateString}_{SystemInfo.deviceUniqueIdentifier}_log.txt");
+
             ManageLogDirectory(logDirectoryPath);
 
             Application.logMessageReceived += HandleLogMessage;

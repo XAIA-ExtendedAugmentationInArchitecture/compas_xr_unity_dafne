@@ -604,7 +604,7 @@ namespace CompasXR.UI
                 int ElementsTotal = databaseManager.BuildingPlanDataItem.steps.Count;
                 float SliderMax = 1;
                 float SliderMin = 0;
-                float SliderRemaped = HelpersExtensions.Remap(SliderValue, SliderMin, SliderMax, min, ElementsTotal); 
+                float SliderRemaped = HelpersExtensions.Remap(SliderValue, SliderMin, SliderMax, min+2, min+20); 
 
                 foreach(int index in Enumerable.Range(min, ElementsTotal))
                 {
@@ -637,7 +637,7 @@ namespace CompasXR.UI
                 int ElementsTotal = databaseManager.BuildingPlanDataItem.steps.Count;
                 float SliderMax = 1;
                 float SliderMin = 0;
-                float SliderRemaped = HelpersExtensions.Remap(SliderValue, SliderMin, SliderMax, 0, max); 
+                float SliderRemaped = HelpersExtensions.Remap(SliderValue, SliderMin, SliderMax, 2, 20); 
 
                 foreach(int index in Enumerable.Range(0, max))
                 {
@@ -646,7 +646,7 @@ namespace CompasXR.UI
                     GameObject element = Elements.FindObject(elementName);
                     if (element != null)
                     {
-                        if (InstanceNumber > 1- SliderRemaped)
+                        if (InstanceNumber > max- SliderRemaped)
                         {
                             element.SetActive(true); 
                         }
